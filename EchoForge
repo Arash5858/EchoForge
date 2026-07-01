@@ -1,0 +1,84 @@
+import os
+import shutil
+import json
+from datetime import datetime
+
+LOG_FILE = "echoforge_log.json"
+
+def organize(directory):
+    history = []
+
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+
+        if os.path.isfile(path):
+            ext = os.path.splitext(filename)[1][1:].lower()
+
+            if not ext:
+                ext = "others"
+
+            target = os.path.join(directory, ext)
+
+            os.makedirs(target, exist_ok=True)
+
+            new_path = os.path.join(target, filename)
+            shutil.move(path, new_path)
+
+            history.append({
+                "from": path,
+                "to": new_path,
+                "time": datetime.now().isoformat()
+            })
+
+            print(f"Moved: {filename} -> {ext}/")
+
+    with open(LOG_FILE, "w") as f:
+        json.dump(history, f, indent=4)
+
+    print("\nOrganization complete!")
+
+def undo():
+    if not os.path.exists(LOG_FILE):
+        print("No history found.")
+        return
+
+    with open(LOG_FILE, "r") as f:
+        history = json.load(f)
+
+    for item in reversed(history):
+        if os.path.exists(item["to"]):
+            shutil.move(item["to"], item["from"])
+
+    os.remove(LOG_FILE)
+    print("Undo completed!")
+
+if __name__ == "__main__":
+    print("EchoForge")
+    print("1. Organize")
+    print("2. Undo")
+
+    choice = input("Select: ")
+
+    if choice == "1":
+        folder = input("Directory: ")
+        organize(folder)
+    elif choice == "2":
+        undo()
+    else:
+        print("Invalid choice.")
+# EchoForge
+
+EchoForge is a lightweight and fast file organization utility written in Python.
+
+## Features
+
+- 📂 Automatically sorts files by extension
+- 🔄 Undo support
+- 📝 Operation logging
+- ⚡ Fast and dependency-free
+- 💻 Cross-platform (Windows, Linux, macOS)
+
+## Usage
+
+```bash
+python echoforge.py
