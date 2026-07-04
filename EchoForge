@@ -19,19 +19,6 @@ def organize(directory):
 
             target = os.path.join(directory, ext)
 
-            os.makedirs(target, exist_ok=True)
-
-            new_path = os.path.join(target, filename)
-            shutil.move(path, new_path)
-
-            history.append({
-                "from": path,
-                "to": new_path,
-                "time": datetime.now().isoformat()
-            })
-
-            print(f"Moved: {filename} -> {ext}/")
-
     with open(LOG_FILE, "w") as f:
         json.dump(history, f, indent=4)
 
@@ -48,6 +35,11 @@ def undo():
     for item in reversed(history):
         if os.path.exists(item["to"]):
             shutil.move(item["to"], item["from"])
+
+            os.makedirs(target, exist_ok=True)
+
+            new_path = os.path.join(target, filename)
+            shutil.move(path, new_path)
 
     os.remove(LOG_FILE)
     print("Undo completed!")
