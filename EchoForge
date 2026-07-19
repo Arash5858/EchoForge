@@ -8,14 +8,12 @@ LOG_FILE = "echoforge_log.json"
 def organize(directory):
     history = []
 
+
+   
     with open(LOG_FILE, "w") as f:
         json.dump(history, f, indent=4)
 
     print("\nOrganization complete!")
-
-    for filename in os.listdir(directory):
-        path = os.path.join(directory, filename)
-
         if os.path.isfile(path):
             ext = os.path.splitext(filename)[1][1:].lower()
 
